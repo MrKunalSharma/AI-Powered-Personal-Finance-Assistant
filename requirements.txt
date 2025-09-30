@@ -1,0 +1,39 @@
+# Core ML/AI
+numpy
+pandas
+scikit-learn
+torch
+transformers
+langchain
+openai
+
+# NLP & Text Processing
+spacy
+nltk
+pytesseract
+pdf2image
+PyPDF2
+
+# API & Backend
+fastapi
+uvicorn
+pydantic
+python-multipart
+
+# Database
+sqlalchemy
+alembic
+psycopg2-binary
+
+# Security
+python-jose[cryptography]
+passlib[bcrypt]
+python-dotenv
+
+# Testing
+pytest
+pytest-asyncio
+
+# Additional utilities
+openpyxl
+python-dateutil
