@@ -1,38 +1,7 @@
-# Python
 __pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-venv/
-env/
-ENV/
-
-# Environment variables
+*.pyc
 .env
-.env.local
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# Data
-data/raw/*
-data/processed/*
-data/models/*
-!data/*/.gitkeep
-
-# Logs
-logs/
-*.log
-
-# OS
+finance.db
+venv/
+*.pkl
 .DS_Store
-Thumbs.db
-
-# Testing
-.pytest_cache/
-.coverage
-htmlcov/
