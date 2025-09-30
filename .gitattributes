@@ -1,0 +1,7 @@
+# Force Unix line endings for shell scripts
+*.sh text eol=lf
+render_build.sh text eol=lf
+
+# Handle Python files
+*.py text eol=lf
+requirements*.txt text eol=lf
