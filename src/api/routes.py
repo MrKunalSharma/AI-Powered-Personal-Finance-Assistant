@@ -14,7 +14,7 @@ from ..ml.categorizer import TransactionCategorizer
 from ..services.analytics import AnalyticsService
 from ..services.budget_service import BudgetService
 from ..services.prediction_service import PredictionService
-from ..parsers.receipt_parser import ReceiptParser
+# from ..parsers.receipt_parser import ReceiptParser
 from ..services.currency_service import CurrencyService
 
 router = APIRouter()
@@ -896,7 +896,7 @@ def get_ai_insights(
 
 
 # Initialize receipt parser
-receipt_parser = ReceiptParser()
+# receipt_parser = ReceiptParser()
 
 # Receipt OCR Endpoint
 @router.post("/transactions/upload-receipt")
@@ -905,79 +905,90 @@ async def upload_receipt(
     current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    """Upload and parse receipt image"""
-    # Validate file type
-    if not file.content_type.startswith('image/'):
-        raise HTTPException(status_code=400, detail="Please upload an image file")
+    """Receipt OCR temporarily disabled in production"""
+    raise HTTPException(
+        status_code=503, 
+        detail="Receipt OCR is temporarily disabled in production deployment"
+    )
+# @router.post("/transactions/upload-receipt")
+# async def upload_receipt(
+#     file: UploadFile = File(...),
+#     current_user: models.User = Depends(get_current_user),
+#     db: Session = Depends(get_db)
+# ):
+#     """Upload and parse receipt image"""
+#     # Validate file type
+#     if not file.content_type.startswith('image/'):
+#         raise HTTPException(status_code=400, detail="Please upload an image file")
     
-    try:
-        # Read image
-        contents = await file.read()
+#     try:
+#         # Read image
+#         contents = await file.read()
         
-        # Parse receipt
-        result = receipt_parser.parse_receipt(contents)
+#         # Parse receipt
+#         result = receipt_parser.parse_receipt(contents)
         
-        if not result['success']:
-            raise HTTPException(status_code=400, detail=result.get('error', 'Failed to parse receipt'))
+#         if not result['success']:
+#             raise HTTPException(status_code=400, detail=result.get('error', 'Failed to parse receipt'))
         
-        if not result['amount']:
-            raise HTTPException(status_code=400, detail="Could not extract amount from receipt")
+#         if not result['amount']:
+#             raise HTTPException(status_code=400, detail="Could not extract amount from receipt")
         
-        # Predict category
-        merchant = result.get('merchant', 'Receipt Transaction')
-        category_name, confidence = categorizer.predict(merchant)
+#         # Predict category
+#         merchant = result.get('merchant', 'Receipt Transaction')
+#         category_name, confidence = categorizer.predict(merchant)
         
-        # Find or create category
-        category = db.query(models.Category).filter(
-            models.Category.name == category_name,
-            models.Category.user_id == current_user.id
-        ).first()
+#         # Find or create category
+#         category = db.query(models.Category).filter(
+#             models.Category.name == category_name,
+#             models.Category.user_id == current_user.id
+#         ).first()
         
-        if not category:
-            category = db.query(models.Category).filter(
-                models.Category.name == "Others",
-                models.Category.user_id == current_user.id
-            ).first()
+#         if not category:
+#             category = db.query(models.Category).filter(
+#                 models.Category.name == "Others",
+#                 models.Category.user_id == current_user.id
+#             ).first()
         
-        # Create transaction
-        transaction = models.Transaction(
-            user_id=current_user.id,
-            amount=result['amount'],
-            description=f"{merchant} - Receipt",
-            category_id=category.id if category else None,
-            transaction_type='expense',
-            transaction_date=datetime.now(),  # Could parse from receipt if available
-            source='receipt_ocr',
-            raw_text=result['raw_text'][:1000]  # Store first 1000 chars
-        )
+#         # Create transaction
+#         transaction = models.Transaction(
+#             user_id=current_user.id,
+#             amount=result['amount'],
+#             description=f"{merchant} - Receipt",
+#             category_id=category.id if category else None,
+#             transaction_type='expense',
+#             transaction_date=datetime.now(),  # Could parse from receipt if available
+#             source='receipt_ocr',
+#             raw_text=result['raw_text'][:1000]  # Store first 1000 chars
+#         )
         
-        db.add(transaction)
-        db.commit()
-        db.refresh(transaction)
+#         db.add(transaction)
+#         db.commit()
+#         db.refresh(transaction)
         
-        # Check budget
-        if category:
-            budget_service = BudgetService(db)
-            alert = budget_service.check_budget_alert(current_user.id, category.id)
+#         # Check budget
+#         if category:
+#             budget_service = BudgetService(db)
+#             alert = budget_service.check_budget_alert(current_user.id, category.id)
         
-        return {
-            "transaction_id": transaction.id,
-            "parsed_data": {
-                "amount": result['amount'],
-                "merchant": result['merchant'],
-                "items": result.get('items', []),
-                "date": result.get('date')
-            },
-            "category": category_name,
-            "confidence": confidence,
-            "message": f"Receipt processed successfully. Transaction of ₹{result['amount']:,.2f} created."
-        }
+#         return {
+#             "transaction_id": transaction.id,
+#             "parsed_data": {
+#                 "amount": result['amount'],
+#                 "merchant": result['merchant'],
+#                 "items": result.get('items', []),
+#                 "date": result.get('date')
+#             },
+#             "category": category_name,
+#             "confidence": confidence,
+#             "message": f"Receipt processed successfully. Transaction of ₹{result['amount']:,.2f} created."
+#         }
         
-    except HTTPException:
-        raise
-    except Exception as e:
-        print(f"Receipt processing error: {e}")
-        raise HTTPException(status_code=500, detail=f"Error processing receipt: {str(e)}")
+#     except HTTPException:
+#         raise
+#     except Exception as e:
+#         print(f"Receipt processing error: {e}")
+#         raise HTTPException(status_code=500, detail=f"Error processing receipt: {str(e)}")
     
 # Currency Endpoints
 @router.get("/currency/rates")
