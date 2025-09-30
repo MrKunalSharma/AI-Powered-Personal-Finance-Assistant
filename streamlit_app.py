@@ -9,10 +9,9 @@ import os
 
 # API Configuration
 if 'API_URL' in st.secrets:
-    BASE_URL = st.secrets['API_URL']
+    BASE_URL = st.secrets['https://ai-finance-api-sj9l.onrender.com/api/v1']
 else:
     BASE_URL = os.getenv('API_URL', 'http://localhost:8000/api/v1')
-BASE_URL = "http://localhost:8000/api/v1"
 
 
 # Initialize session state
