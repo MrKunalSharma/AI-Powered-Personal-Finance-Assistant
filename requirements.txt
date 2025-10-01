@@ -1,7 +1,3 @@
-# Core packages for Streamlit
 streamlit==1.28.0
-pandas==2.0.3
-numpy==1.24.3
 plotly==5.17.0
 requests==2.31.0
-python-dateutil==2.8.2
